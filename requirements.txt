@@ -2,7 +2,6 @@ streamlit
 pandas
 plotly==5.7.0
 numpy==1.22.3
-json==1.1
 sklearn
 subprocess
 spotipy
