@@ -2,80 +2,12 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
-import json
+import ast
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import pairwise_distances_argmin_min
-import subprocess
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-
-#Authentication - without user
-client_credentials_manager = SpotifyClientCredentials(client_id='66f0b03c55dc43329ec9a8795e6f9bf5', client_secret='4d4e2232d4de4d1aa3801d05c852a5ee')
-sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
-
-# Getting Data from Top 50 Global Songs
-playlist_link = "https://open.spotify.com/playlist/37i9dQZEVXbNG2KDcFcKOF?si=1333723a6eff4b7f"
-playlist_URI = playlist_link.split("/")[-1].split("?")[0]
-track_uris = [x["track"]["uri"] for x in sp.playlist_tracks(playlist_URI)["items"]]
-
-# Initialize empty lists for data
-data = []
-for track in sp.playlist_tracks(playlist_URI)["items"]:
-
-    # Extract data for each track
-    track_uri = track["track"]["uri"]
-    track_name = track["track"]["name"]
-    artist_uri = track["track"]["artists"][0]["uri"]
-    artist_info = sp.artist(artist_uri)
-    artist_name = track["track"]["artists"][0]["name"]
-    artist_pop = artist_info["popularity"]
-    artist_genres = artist_info["genres"]
-    album = track["track"]["album"]["name"]
-    track_pop = track["track"]["popularity"]
-
-
-    # Get audio features
-    audio_features = sp.audio_features([track_uri])[0]
-    acousticness = audio_features["acousticness"]
-    danceability = audio_features["danceability"]
-    energy = audio_features["energy"]
-    instrumentalness = audio_features["instrumentalness"]
-    liveness = audio_features["liveness"]
-    loudness = audio_features["loudness"]
-    speechiness = audio_features["speechiness"]
-    tempo = audio_features["tempo"]
-    valence = audio_features["valence"]
-
-    # Append the data to the list
-    data.append([track_uri, track_name, artist_name, artist_pop, artist_genres, album, track_pop,
-                 acousticness, danceability, energy, instrumentalness, liveness, loudness,
-                 speechiness, tempo, valence])
-
-from sklearn.preprocessing import MinMaxScaler
-
-# Create a DataFrame
-columns = ["Track_URI", "Track_Name", "Artist_Name", "Artist_Popularity", "Artist_Genres", "Album", "Track_Popularity",
-           "Acousticness", "Danceability", "Energy", "Instrumentalness", "Liveness", "Loudness",
-           "Speechiness", "Tempo", "Valence"]
-
-df = pd.DataFrame(data, columns=columns)
-
-# Use MinMaxScaler to scale the numerical columns
-scaler = MinMaxScaler()
-scaled_data = scaler.fit_transform(df.iloc[:, 7:])  # Start from the 8th column (Acousticness) to the last column (Valence)
-
-# Replace the scaled data back to the DataFrame
-df.iloc[:, 7:] = scaled_data
-
-# run data collection and preprocessing
-#subprocess.run(['python','datacollection.py'])
 
 # Create a sample DataFrame with audio features
-#df = pd.read_excel('SpotifyTop50Global.xlsx')
-
-
-#Start of the Page
-st.set_page_config(page_title="Audio Analysis", layout="centered")
+df = pd.read_excel('SpotifyTop50Global.xlsx')
 
 # Streamlit app
 st.markdown('<p style="font-size: 60px; font-weight: bold;">Spotify Top 50 Global Audio Analysis</p>', unsafe_allow_html=True)
@@ -135,8 +67,7 @@ with st.sidebar:
 
 
 # Function to create the radar chart for audio features
-def create_radar_chart(selected_track_data):
-    track_data = selected_track_data.copy()
+def create_radar_chart(track_data):
     fig = px.line_polar(track_data, 
                         r=track_data[['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness', 'Tempo', 'Valence']].values[0], 
                         theta=['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness', 'Tempo', 'Valence'], 
@@ -197,18 +128,12 @@ if not selected_track_data.empty:
     # Display the radar chart for audio features
     st.plotly_chart(create_radar_chart(selected_track_data), use_container_width=True)
 
-    try:
-        genre_string = selected_track_data["Artist_Genres"].values[0]
-        genres_list = json.loads(genre_string)
-    except json.JSONDecodeError:
-        # If the JSON string is invalid, set the genre list to an empty list
-        genres_list = []
-    # Join the list of genres
-    genres = ', '.join(genres_list)
-    # Display a success message and a warning message
-    st.success(f'**Artist Genres:** {genres}')
-    st.warning(f'**Artist Popularity:** {selected_track_data["Artist_Popularity"].values[0]}')
-    
+    # Convert the genre string back to a list using ast.literal_eval
+    genres_list = ast.literal_eval(selected_track_data["Artist_Genres"].values[0])
+    genres = ', '.join(genres_list)  # Join the list of genres
+    st.success(f'**Artist Genres:** {genres}')  # Use st.success() for a green box
+    st.warning(f'**Artist Popularity:** {selected_track_data["Artist_Popularity"].values[0]}')  # Use st.warning() for a yellow box
+
     # Display the most similar track information in a styled box
     st.markdown(
         """
