@@ -1,6 +1,6 @@
 streamlit
 pandas
-plotly==5.7.0
+plotly.express
 numpy==1.22.3
 scikit-learn
 spotipy
