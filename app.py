@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
-import ast
+import json
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import pairwise_distances_argmin_min
 import subprocess
@@ -136,11 +136,17 @@ if not selected_track_data.empty:
     # Display the radar chart for audio features
     st.plotly_chart(create_radar_chart(selected_track_data), use_container_width=True)
 
-    # Convert the genre string back to a list using ast.literal_eval
-    genres_list = ast.literal_eval(selected_track_data["Artist_Genres"].values[0])
-    genres = ', '.join(genres_list)  # Join the list of genres
-    st.success(f'**Artist Genres:** {genres}')  # Use st.success() for a green box
-    st.warning(f'**Artist Popularity:** {selected_track_data["Artist_Popularity"].values[0]}')  # Use st.warning() for a yellow box
+    try:
+        genre_string = selected_track_data["Artist_Genres"].values[0]
+        genres_list = json.loads(genre_string)
+    except json.JSONDecodeError:
+        # If the JSON string is invalid, set the genre list to an empty list
+        genres_list = []
+    # Join the list of genres
+    genres = ', '.join(genres_list)
+    # Display a success message and a warning message
+    st.success(f'**Artist Genres:** {genres}')
+    st.warning(f'**Artist Popularity:** {selected_track_data["Artist_Popularity"].values[0]}')
     
 
     # Display the most similar track information
