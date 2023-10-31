@@ -135,8 +135,8 @@ with st.sidebar:
 
 
 # Function to create the radar chart for audio features
-def create_radar_chart(track_data):
-    del track_data
+def create_radar_chart(selected_track_data):
+    track_data = selected_track_data.copy()
     fig = px.line_polar(track_data, 
                         r=track_data[['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness', 'Tempo', 'Valence']].values[0], 
                         theta=['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Loudness', 'Speechiness', 'Tempo', 'Valence'], 
