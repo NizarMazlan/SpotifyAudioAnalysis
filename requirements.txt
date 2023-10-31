@@ -3,5 +3,4 @@ pandas
 plotly==5.7.0
 numpy==1.22.3
 scikit-learn
-subprocess
 spotipy
