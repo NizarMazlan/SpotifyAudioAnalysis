@@ -32,4 +32,4 @@ The Similarity Function is a K-Means Clustering algorithm that can be used to id
 
 ## Conclusion
 
-Spotify Audio Analysis is a powerful tool that can be used to gain insights into the audio features of your favorite songs. With Spotipy, you can easily access and analyze audio data from Spotify tracks.
+Spotify Audio Analysis is a powerful tool that can be used to gain insights into the audio features of your favorite songs. With Spotipy, you can easily access and analyze audio data from Spotify tracks. As a note, in order for the list to update, must run datacollection.py
