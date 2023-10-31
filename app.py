@@ -208,14 +208,6 @@ if not selected_track_data.empty:
     st.success(f'**Artist Genres:** {genres}')
     st.warning(f'**Artist Popularity:** {selected_track_data["Artist_Popularity"].values[0]}')
     
-
-    # Display the most similar track information
-    #st.subheader('Most Similar Track')
-    #st.write(f"Track Name: {most_similar_track['Track_Name']}")
-    #st.write(f"Artist: {most_similar_track['Artist_Name']}")
-    #st.write(f"Album: {most_similar_track['Album']}")
-    #st.write(f"Popularity: {most_similar_track['Artist_Popularity']}")
-
     # Display the most similar track information in a styled box
     st.markdown(
         """
