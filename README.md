@@ -1,4 +1,4 @@
-# SpotifyAudioAnalysis
+# Spotify Audio Analysis
 
 The Spotify Top 50 Global Audio Analysis assigns varying weightages to different metrics based on their relevance to specific song features, reflecting the author's and song's background. Similarity Function is based on K-Means Clustering, to identify similar songs based on audio features.
 
